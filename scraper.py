@@ -1,32 +1,34 @@
 from bs4 import BeautifulSoup
 import urllib2, codecs, os
+import re
 
 """
-domain to crawl: http://stroki.net/
+domain to crawl: http://feb-web.ru/
 open dev tools: command option i
 create natural link to open Sublime from command line:
 ln -s "/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl" ~/bin/subl
 
 Structure of page:
 
-  homepage contains poets
-  each poet page has poems
+  frames!
+  homepage contains []
+  each poet page has []
 
-  poet url: http://stroki.net/content/blogcategory/2/3/
-  poem url: http://stroki.net/content/view/555/3/
+  poet url: http://feb-web.ru/feb/mayakovsky/texts
+  poem url: http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-033-.htm?cmd=2
 
   class selector: .
   id selector: #
 
 """
 
-poem_directory = "stroki"
+poem_directory = "feb-web"
 
 if not os.path.exists(poem_directory):
     os.makedirs(poem_directory)
 
 # request the landing page for the site
-response = urllib2.urlopen("http://stroki.net/")
+response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-033-.htm?cmd=2")
 
 # get the html content using windows 1251 encoding
 html = response.read()
@@ -35,8 +37,18 @@ decoded = unicode(html, "windows-1251")
 # transform the html into a soup object
 soup = BeautifulSoup(decoded, 'html.parser')
 
+# find poem title graf
+poem = soup.find("p", class_="zag10ot30arr")
+poem_title = poem.contents[0].contents[0].string
+
+poem_stanzas = soup.find_all("p", re.compile("stih10ot"))
+print(poem_stanzas[0])
+
 # find all author tags
-a_tags = soup.find_all("a", class_="mainlevel")
+# a_tags = soup.find_all("a", class_="mainlevel")
+
+
+"""
 
 # examine each a tag object in turn
 for a_tag in a_tags[:3]:
@@ -121,7 +133,6 @@ for a_tag in a_tags[:3]:
       fp.write(body)
       fp.close()
 
-    """
     # write the poem to the filesystem
     with codecs.open(poem, "w", "utf-8") as out:
       out.write(poem)
