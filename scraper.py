@@ -28,7 +28,8 @@ if not os.path.exists(poem_directory):
     os.makedirs(poem_directory)
 
 # request the landing page for the site
-response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-033-.htm?cmd=2")
+#response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-033-.htm?cmd=2")
+response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-034-.htm?cmd=2")
 
 # get the html content using windows 1251 encoding
 html = response.read()
@@ -41,8 +42,30 @@ soup = BeautifulSoup(decoded, 'html.parser')
 poem = soup.find("p", class_="zag10ot30arr")
 poem_title = poem.contents[0].contents[0].string
 
-poem_stanzas = soup.find_all("p", re.compile("stih10ot"))
+poem_stanzas = soup.find_all("p", class_=re.compile("stih10ot"))
+
+poem_stanzas[0].find("div", style="display:none;").extract()
+poem_date = poem_stanzas[0].find("p", class_="podp-lev").extract()
+
+"""
+print(poem_title)
 print(poem_stanzas[0])
+print(poem_date)
+"""
+
+if len(poem_stanzas[0]) > 0:
+  '''
+  title = title.replace("/", "-")
+  title = title.replace(":", "-").strip().strip(",\".")
+  '''
+
+  body = str(poem_stanzas[0])
+  author = "mayakovsky"
+  date = "foo"
+
+  fp = codecs.open(poem_directory + "/" + author + "--" + poem_title + "--" + date + ".txt", "w", "utf-8")
+  fp.write(body)
+  fp.close()
 
 # find all author tags
 # a_tags = soup.find_all("a", class_="mainlevel")
