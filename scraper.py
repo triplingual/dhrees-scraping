@@ -29,11 +29,13 @@ if not os.path.exists(poem_directory):
 
 
 # loop from 001 to 384
-for page in range(1, 33):
+for page in range(7, 465):
   try:
     page_number = str(page).zfill(3)
-    response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-"+page_number+"-.htm?cmd=2")
+    url = "http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-" + page_number + "-.htm?cmd=2"
+    response = urllib2.urlopen(url)
 #    print("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-" + page_number + "-.htm?cmd=2")
+
     # get the html content using windows 1251 encoding
     html = response.read()
     decoded = unicode(html, "windows-1251")
@@ -42,9 +44,13 @@ for page in range(1, 33):
     soup = BeautifulSoup(decoded, 'html.parser')
 
     # find poem title graf
-    poem = soup.find("p", class_="zag10ot30arr")
-    poem_title = poem.contents[0].contents[0].string
+    poem = soup.find("p", class_=re.compile("zag10ot30ar"))
+    try:
+      poem_title = poem.contents[0].contents[0].string
+    except Exception, e:
+      poem_title = "Untitled"
 
+    # find poem
     poem_stanzas = soup.find_all("p", class_=re.compile("stih10ot"))
 
     poem_stanzas[0].find("div", style="display:none;").extract()
@@ -63,6 +69,9 @@ for page in range(1, 33):
       fp.write(body)
       fp.close()
   except urllib2.HTTPError, e:
+    continue
+  except Exception, e:
+    print(url + "; " + repr(e))
     continue
 
 """
