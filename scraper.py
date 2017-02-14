@@ -31,49 +31,50 @@ if not os.path.exists(poem_directory):
 # loop from 001 to 384
 for page in range(1, 33):
   try:
-    page_number = page.zfill
-    response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-034-.htm?cmd=2")
+    page_number = str(page).zfill(3)
+    response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-"+page_number+"-.htm?cmd=2")
+#    print("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-" + page_number + "-.htm?cmd=2")
+    # get the html content using windows 1251 encoding
+    html = response.read()
+    decoded = unicode(html, "windows-1251")
+
+    # transform the html into a soup object
+    soup = BeautifulSoup(decoded, 'html.parser')
+
+    # find poem title graf
+    poem = soup.find("p", class_="zag10ot30arr")
+    poem_title = poem.contents[0].contents[0].string
+
+    poem_stanzas = soup.find_all("p", class_=re.compile("stih10ot"))
+
+    poem_stanzas[0].find("div", style="display:none;").extract()
+    poem_date = poem_stanzas[0].find("p", class_="podp-lev").extract().i.string
+
+    if len(poem_stanzas[0]) > 0:
+
+    # TODO: extract page number SPANs
+    # TODO: extract line number SPANs
+    # NOTE: poem named "150 000 000" has formatting that might hork things
+      body = poem_stanzas[0].getText()
+      author = "mayakovsky"
+      date = poem_date
+
+      fp = codecs.open(poem_directory + "/" + author + "--" + poem_title + "--" + date + ".txt", "w", "utf-8")
+      fp.write(body)
+      fp.close()
   except urllib2.HTTPError, e:
     continue
 
+"""
 # try
 # catch HTTPError 404 page
 
 # request the landing page for the site
 response = urllib2.urlopen("http://feb-web.ru/feb/mayakovsky/texts/ms0/ms1/ms1-034-.htm?cmd=2")
 
-# get the html content using windows 1251 encoding
-html = response.read()
-decoded = unicode(html, "windows-1251")
-
-# transform the html into a soup object
-soup = BeautifulSoup(decoded, 'html.parser')
-
-# find poem title graf
-poem = soup.find("p", class_="zag10ot30arr")
-poem_title = poem.contents[0].contents[0].string
-
-poem_stanzas = soup.find_all("p", class_=re.compile("stih10ot"))
-
-poem_stanzas[0].find("div", style="display:none;").extract()
-poem_date = poem_stanzas[0].find("p", class_="podp-lev").extract().i.string
-
-if len(poem_stanzas[0]) > 0:
-
-# TODO: extract page number SPANs
-# TODO: extract line number SPANs
-# NOTE: poem named "150 000 000" has formatting that might hork things
-  body = poem_stanzas[0].getText()
-  author = "mayakovsky"
-  date = poem_date
-
-  fp = codecs.open(poem_directory + "/" + author + "--" + poem_title + "--" + date + ".txt", "w", "utf-8")
-  fp.write(body)
-  fp.close()
 
 # find all author tags
 # a_tags = soup.find_all("a", class_="mainlevel")
 
 
-"""
 """
