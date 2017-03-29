@@ -1,6 +1,6 @@
-from bs4 import BeautifulSoup
-import urllib2, codecs, os
-import re
+  from bs4 import BeautifulSoup
+  import urllib2, codecs, os
+  import re
 
 """
 domain to crawl: http://feb-web.ru/
