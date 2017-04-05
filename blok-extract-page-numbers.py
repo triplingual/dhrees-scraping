@@ -14,7 +14,7 @@ Close files
 fp = open("/Users/trip/Coding/TextMining/Bozovic-Rosenkranz-S15/"
           "dhrees-scraping/blok_sobranie_sochineny_v_8-mi_tt_tom1_1960__ocr-index.txt")
 # Create regex pattern to find all numbers
-patt = re.compile("\d*")
+patt = re.compile("\d+")
 # Execute regex into variable
 numbers = patt.findall(fp.read())
 # close original file
@@ -33,5 +33,5 @@ closing output file if page number of page break line matches number in the numb
 
 # Open file for writing
 fp = open("/Users/trip/Coding/TextMining/Bozovic-Rosenkranz-S15/dhrees-scraping/number-list.txt", "w")
-fp.write(numbers)
+#fp.write(numbers[])
 fp.close()
